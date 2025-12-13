@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>أحمد الصبّاغ | مرشد نفسي وتربوي</title>
+    <!-- استدعاء خطوط عربية أنيقة -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- مكتبة الأيقونات -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* إعدادات عامة */
+        :root {
+            --primary-color: #00ffff; /* سيان ساطع للشعور بالجليد */
+            --secondary-color: #8a2be2; /* بنفسجي للشفق */
+            --glass-bg: rgba(10, 20, 40, 0.6); /* خلفية زجاجية داكنة */
+            --glass-border: rgba(255, 255, 255, 0.15);
+            --text-color: #ffffff;
+            --text-muted: #e0e0e0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            color: var(--text-color);
+            background-color: #000;
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* حاوية الخلفية المتحركة */
+        #canvas-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            /* تدرج لوني خلفي يمثل سماء الليل والشفق */
+            background: linear-gradient(180deg, #020111 0%, #0a1a2a 40%, #172a3a 100%);
+        }
+
+        /* شريط التنقل */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(15px);
+            padding: 15px 0;
+            z-index: 1000;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .nav-container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+        }
+
+        .nav-links {
+            list-style: none;
+            display: flex;
+            gap: 20px;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #fff;
+            font-weight: 600;
+            transition: 0.3s;
+            font-size: 0.95rem;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary-color);
+            text-shadow: 0 0 5px var(--primary-color);
+        }
+
+        /* التنسيق الأساسي للأقسام */
+        section {
+            padding: 80px 20px;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 50px;
+            color: var(--primary-color);
+            position: relative;
+            display: inline-block;
+            width: 100%;
+            text-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
+        }
+
+        /* بطاقة الزجاج (Glassmorphism) */
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+            transition: transform 0.3s ease;
+        }
+
+        .glass-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary-color);
+            box-shadow: 0 10px 40px 0 rgba(0, 210, 255, 0.2);
+        }
+
+        /* الصفحة الرئيسية */
+        .hero {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding-top: 60px;
+            position: relative;
+        }
+
+        .hero-content {
+            z-index: 1;
+        }
+
+        .profile-img {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            object-fit: cover;
+            object-position: top;
+            border: 4px solid var(--primary-color);
+            margin-bottom: 20px;
+            box-shadow: 0 0 30px rgba(0, 210, 255, 0.6);
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            margin-bottom: 30px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 35px;
+            background: linear-gradient(45deg, var(--secondary-color), var(--primary-color));
+            color: #fff;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: bold;
+            transition: 0.3s;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 0 15px rgba(138, 43, 226, 0.5);
+        }
+
+        .btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 25px rgba(0, 210, 255, 0.8);
+        }
+
+        /* قسم نبذة عني */
+        .about-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .stat-box {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .stat-number {
+            display: block;
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        /* قسم المبادرة */
+        .workshop-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .workshop-item {
+            background: rgba(0, 210, 255, 0.1);
+            padding: 10px 20px;
+            border-radius: 30px;
+            border: 1px solid rgba(0, 210, 255, 0.3);
+            font-size: 0.9rem;
+            color: #fff;
+        }
+
+        /* قسم ما يميزني والإنجازات */
+        .features-list, .achievements-list {
+            list-style: none;
+        }
+
+        .features-list li, .achievements-list li {
+            margin-bottom: 15px;
+            padding-right: 25px;
+            position: relative;
+        }
+
+        .features-list li::before, .achievements-list li::before {
+            content: '❄';
+            position: absolute;
+            right: 0;
+            color: var(--primary-color);
+            font-size: 1.2rem;
+        }
+
+        /* قسم المهارات */
+        .skills-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .skill-tag {
+            background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.02));
+            padding: 15px 25px;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .skill-tag:hover {
+            background: rgba(0, 210, 255, 0.2);
+            border-color: var(--primary-color);
+        }
+
+        /* تواصل معي */
+        .contact-info {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .contact-item {
+            font-size: 1.1rem;
+            color: #fff;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: 0.3s;
+        }
+
+        .contact-item:hover {
+            color: var(--primary-color);
+            text-shadow: 0 0 10px var(--primary-color);
+        }
+
+        /* تجاوب الشاشات */
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2rem; }
+            .about-grid { grid-template-columns: 1fr; }
+            .nav-links { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- حاوية الخلفية الثلاثية الأبعاد -->
+    <div id="canvas-container"></div>
+
+    <!-- شريط التنقل -->
+    <nav>
+        <div class="nav-container">
+            <div class="logo">أحمد الصبّاغ</div>
+            <ul class="nav-links">
+                <li><a href="#home">الرئيسية</a></li>
+                <li><a href="#about">من أنا</a></li>
+                <li><a href="#initiative">مبادرة نَفَس</a></li>
+                <li><a href="#skills">المهارات</a></li>
+                <li><a href="#contact">تواصل معي</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- الصفحة الرئيسية -->
+    <header id="home" class="hero">
+        <div class="hero-content">
+            <!-- الصورة الشخصية -->
+            <img src="https://scontent.famm6-1.fna.fbcdn.net/v/t39.30808-6/490298443_1296738965350822_3530117628692209941_n.jpg?_nc_cat=104&cb2=99be929b-bd9a46d7&ccb=1-7&_nc_sid=833d8c&_nc_ohc=MPhouXvgECgQ7kNvwGngLTl&_nc_oc=AdmAmspX4oqiCkbfu7jysWlbdLL4THQYGCwW5wKIrB1rEoDDcUTQnzVAJrR4086MXKTQGCBvwh9fY7ZoqmSPTJe6&_nc_zt=23&_nc_ht=scontent.famm6-1.fna&_nc_gid=wOufawrI3fzFH2BuVQgu1Q&oh=00_AflqjjeMqEfVWgCaECcwBPa0E8Zc3s-SleF-JnyUfhzvBg&oe=69432BB7" alt="أحمد الصبّاغ" class="profile-img">
+            <h1>أحمد الصبّاغ</h1>
+            <p>مرشد نفسي وتربوي | مؤسس مبادرة نَفَس شبابي</p>
+            <a href="#contact" class="btn">تواصل معي الآن</a>
+        </div>
+    </header>
+
+    <!-- نبذة تعريفية -->
+    <section id="about">
+        <h2 class="section-title">نبذة تعريفية</h2>
+        <div class="glass-card about-grid">
+            <div>
+                <p style="margin-bottom: 20px; font-size: 1.1rem;">
+                    أنا أحمد الصبّاغ، مرشد نفسي وتربوي من محافظة عجلون، شغوف بتمكين الشباب وتعزيز الصحة النفسية في المجتمع الأردني. لدي خبرة في تقديم الورش والدورات الأونلاين والوجاهية، مع قدرة على إيصال المفاهيم النفسية بطريقة مبسّطة ومؤثرة.
+                </p>
+                <p><strong>التعليم:</strong> بكالوريوس الإرشاد النفسي والتربوي – جامعة البلقاء التطبيقية</p>
+            </div>
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <span class="stat-number">24</span>
+                    <span>سنة</span>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-number">+3</span>
+                    <span>سنوات خبرة</span>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-number">+50</span>
+                    <span>ورشة عمل</span>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-number">JO</span>
+                    <span>عجلون</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- المبادرة -->
+    <section id="initiative">
+        <h2 class="section-title">مبادرة نَفَس شبابي</h2>
+        <div class="glass-card">
+            <p style="margin-bottom: 20px;">
+                مبادرة شبابية تهدف إلى رفع الوعي النفسي وتمكين الشباب من خلال ورش عمل تفاعلية وجلسات حوارية تناقش أهم التحديات التي تواجه جيلنا.
+            </p>
+            <h3>أبرز الورشات التدريبية:</h3>
+            <div class="workshop-list">
+                <div class="workshop-item">العلاقة بين الصحة النفسية والجسدية</div>
+                <div class="workshop-item">تأثير السوشال ميديا</div>
+                <div class="workshop-item">الحيوانات الأليفة وصحتنا النفسية</div>
+                <div class="workshop-item">التدخين والجانب النفسي</div>
+                <div class="workshop-item">تعديل السلوك</div>
+                <div class="workshop-item">حب الذات</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ما يميزني والإنجازات -->
+    <section id="unique">
+        <div class="about-grid">
+            <div class="glass-card">
+                <h3>✨ ما الذي يميزني؟</h3>
+                <br>
+                <ul class="features-list">
+                    <li>تبسيط المفاهيم النفسية باللهجة المحلية وبأسلوب شبابي</li>
+                    <li>خلق تفاعل وأثر ملموس خلال الورشات</li>
+                    <li>الدمج بين الإرشاد النفسي والتقنية (تصميم – برمجة – مواقع)</li>
+                    <li>سريع التعلم واكتساب المهارات الجديدة</li>
+                    <li>مهارات قيادية عالية في تنظيم وإدارة الفرق</li>
+                    <li>حضور قوي أمام الكاميرا وصناعة محتوى مؤثر</li>
+                </ul>
+            </div>
+            <div class="glass-card">
+                <h3>🏆 الإنجازات</h3>
+                <br>
+                <ul class="achievements-list">
+                    <li>تأسيس وقيادة مبادرة "نَفَس شبابي"</li>
+                    <li>تقديم تدريبات مؤثرة في عدة محافظات أردنية</li>
+                    <li>عقد شراكات استراتيجية مع مؤسسة ولي العهد، مراكز الشباب، والمدارس</li>
+                    <li>قيادة فريق عمل متعدد التخصصات بنجاح</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- المهارات -->
+    <section id="skills">
+        <h2 class="section-title">مهاراتي</h2>
+        <div class="skills-container">
+            <div class="skill-tag"><i class="fas fa-comments"></i> تواصل فعّال</div>
+            <div class="skill-tag"><i class="fas fa-laptop-code"></i> العمل على الكمبيوتر</div>
+            <div class="skill-tag"><i class="fas fa-video"></i> التحدث أمام الكاميرا</div>
+            <div class="skill-tag"><i class="fas fa-users"></i> قيادة الفرق</div>
+            <div class="skill-tag"><i class="fas fa-chalkboard-teacher"></i> تصميم العروض التقديمية</div>
+            <div class="skill-tag"><i class="fas fa-paint-brush"></i> الهوية البصرية واللوجو</div>
+            <div class="skill-tag"><i class="fas fa-pencil-alt"></i> صناعة المحتوى</div>
+            <div class="skill-tag"><i class="fas fa-user-graduate"></i> التدريب والتطوير</div>
+            <div class="skill-tag"><i class="fas fa-brain"></i> الإرشاد النفسي</div>
+        </div>
+    </section>
+
+    <!-- تواصل معي -->
+    <section id="contact">
+        <h2 class="section-title">تواصل معي</h2>
+        <div class="glass-card contact-info">
+            <p>أسعد بتواصلكم لمناقشة أي فرص تعاون أو ورش عمل</p>
+            
+            <a href="mailto:ahmad.s.alsabbagh@gmail.com" class="contact-item">
+                <i class="fas fa-envelope"></i> ahmad.s.alsabbagh@gmail.com
+            </a>
+            
+            <a href="tel:+962791036401" class="contact-item">
+                <i class="fas fa-phone"></i> +962 79 103 6401
+            </a>
+            
+            <div class="contact-item">
+                <i class="fas fa-map-marker-alt"></i> الأردن – عجلون
+            </div>
+            
+            <a href="https://instagram.com/nafas.shababi" target="_blank" class="btn" style="background: linear-gradient(45deg, #833ab4, #fd1d1d, #fcb045); border:none; margin-top: 10px;">
+                <i class="fab fa-instagram"></i> تابع المبادرة على إنستغرام
+            </a>
+        </div>
+    </section>
+
+    <footer style="text-align: center; padding: 20px; color: var(--text-muted); font-size: 0.8rem; background: rgba(0,0,0,0.5);">
+        &copy; 2024 أحمد الصبّاغ. جميع الحقوق محفوظة.
+    </footer>
+
+    <!-- مكتبة Three.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    
+    <script>
+        // إعداد المشهد (Scene)
+        const container = document.getElementById('canvas-container');
+        const scene = new THREE.Scene();
+        
+        // إضافة ضباب (Fog) ليعطي إحساساً بالعمق الشتوي والشفق
+        // اللون: كحلي غامق يميل للبنفسجي
+        scene.fog = new THREE.FogExp2(0x050510, 0.002);
+
+        // الكاميرا
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 2000);
+        camera.position.z = 1000;
+        // رفع الكاميرا قليلاً لرؤية السقوط بشكل أفضل
+        camera.position.y = 100;
+        camera.lookAt(0,0,0);
+
+        // الريندر (Renderer)
+        const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        container.appendChild(renderer.domElement);
+
+        // ------------------------------------------
+        // إنشاء Texture للثلج برمجيًا (رسم بلورة بيضاء ضبابية)
+        // ------------------------------------------
+        function createSnowTexture() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 32;
+            canvas.height = 32;
+            const context = canvas.getContext('2d');
+            
+            // رسم تدرج شعاعي لتبدو كالندفة المضيئة
+            const gradient = context.createRadialGradient(16, 16, 0, 16, 16, 16);
+            gradient.addColorStop(0, 'rgba(255, 255, 255, 1)');
+            gradient.addColorStop(0.4, 'rgba(220, 240, 255, 0.8)');
+            gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
+            
+            context.fillStyle = gradient;
+            context.fillRect(0, 0, 32, 32);
+            
+            const texture = new THREE.CanvasTexture(canvas);
+            return texture;
+        }
+
+        // ------------------------------------------
+        // نظام الجزيئات (Particles) - الثلج المتساقط
+        // ------------------------------------------
+        const snowGeometry = new THREE.BufferGeometry();
+        const snowCount = 2000; // عدد ندف الثلج
+
+        const positions = [];
+        const velocities = []; // سرعة سقوط كل ندفة
+
+        for (let i = 0; i < snowCount; i++) {
+            // توزيع عشوائي في الفضاء (نطاق واسع)
+            positions.push((Math.random() * 2000) - 1000); // x
+            positions.push((Math.random() * 2000) - 1000); // y
+            positions.push((Math.random() * 2000) - 1000); // z
+
+            // سرعة مختلفة لكل ندفة
+            velocities.push((Math.random() * 1.5) + 0.5); 
+        }
+
+        snowGeometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+        snowGeometry.setAttribute('velocity', new THREE.Float32BufferAttribute(velocities, 1));
+
+        const snowMaterial = new THREE.PointsMaterial({
+            color: 0xffffff,
+            size: 6, // حجم الندفة
+            map: createSnowTexture(), // الشكل البلوري
+            transparent: true,
+            opacity: 0.9,
+            blending: THREE.AdditiveBlending,
+            depthWrite: false
+        });
+
+        const snowSystem = new THREE.Points(snowGeometry, snowMaterial);
+        scene.add(snowSystem);
+
+        // ------------------------------------------
+        // إضاءة الشفق (Aurora Lights Simulation)
+        // ------------------------------------------
+        // سنستخدم أضواء ملونة تتحرك لتعطي تأثير توهج على الثلج
+        const light1 = new THREE.PointLight(0x00ffaa, 2, 1500); // أخضر فيروزي
+        light1.position.set(500, 500, 500);
+        scene.add(light1);
+
+        const light2 = new THREE.PointLight(0x8a2be2, 2, 1500); // بنفسجي
+        light2.position.set(-500, 200, 0);
+        scene.add(light2);
+
+        // ------------------------------------------
+        // حلقة التحريك (Animation Loop)
+        // ------------------------------------------
+        let time = 0;
+
+        function animate() {
+            requestAnimationFrame(animate);
+            time += 0.005;
+
+            // 1. تحريك الثلج للأسفل
+            const positions = snowSystem.geometry.attributes.position.array;
+            const velocities = snowSystem.geometry.attributes.velocity.array;
+
+            for (let i = 0; i < snowCount; i++) {
+                // تحديث الارتفاع (y)
+                // positions[i*3 + 1] هو الـ y
+                positions[i*3 + 1] -= velocities[i]; 
+
+                // إضافة حركة جانبية (تموج الرياح)
+                positions[i*3] += Math.sin(time + positions[i*3+1] * 0.01) * 0.3;
+
+                // إذا وصل الثلج للقاع، أعده للأعلى
+                if (positions[i*3 + 1] < -1000) {
+                    positions[i*3 + 1] = 1000; // إعادة للقمة
+                    positions[i*3] = (Math.random() * 2000) - 1000; // موقع عشوائي جديد x
+                    positions[i*3 + 2] = (Math.random() * 2000) - 1000; // موقع عشوائي جديد z
+                }
+            }
+            snowSystem.geometry.attributes.position.needsUpdate = true;
+
+            // 2. دوران بسيط للمشهد بأكمله ليعطي شعور بالدوران في الفضاء
+            snowSystem.rotation.y = time * 0.05;
+
+            // 3. تحريك أضواء الشفق لتعطي شعور التغير اللوني
+            light1.position.x = Math.sin(time * 0.7) * 500;
+            light1.position.z = Math.cos(time * 0.5) * 500;
+            
+            light2.position.x = Math.cos(time * 0.3) * 600;
+            light2.position.y = Math.sin(time * 0.5) * 400 + 200;
+
+            renderer.render(scene, camera);
+        }
+
+        animate();
+
+        // التعامل مع تغيير حجم النافذة
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    </script>
+</body>
+</html>
